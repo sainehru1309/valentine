@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Will You Be My Valentine?</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            font-family: 'Segoe UI', sans-serif;
+            background: radial-gradient(circle at top, #1b2735, #090a0f);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            overflow: hidden;
+        }
+
+        img {
+            width: 220px;
+            margin-bottom: 20px;
+            transition: 0.3s ease;
+        }
+
+        h2 {
+            color: #ff6b81;
+            font-size: 28px;
+            margin-bottom: 30px;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        button {
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        #yesBtn {
+            background: linear-gradient(45deg, #ff2d75, #ff6b81);
+            color: white;
+            padding: 15px 45px;
+            font-size: 18px;
+            box-shadow: 0 0 15px rgba(255, 45, 117, 0.6);
+            transform-origin: top center;
+        }
+
+           #noBtn {
+            background: linear-gradient(45deg, #ff9aa2, #ffb7b2);
+            color: #111;
+            padding: 15px 45px;
+            font-size: 18px;
+            border: 2px solid white;
+            box-shadow:
+                0 0 12px rgba(255, 182, 193, 0.6),
+                0 0 20px rgba(255, 105, 180, 0.3);
+            position: relative;
+        }
+    </style>
+</head>
+
+<body>
+
+<img id="bear" src="https://media.giphy.com/media/26BRv0ThflsHCqDrG/giphy.gif">
+<h2 id="question">Will you be my Valentine? 💌</h2>
+
+<div class="buttons">
+    <button id="yesBtn">YES 💖</button>
+    <button id="noBtn">no 🥺</button>
+</div>
+
+<script>
+
+// Bear rotation list
+const bearGifs = [
+    "https://media.giphy.com/media/d2lcHJTG5Tscg/giphy.gif",
+    "https://media.giphy.com/media/l1J9u3TZfpmeDLkD6/giphy.gif",
+    "https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExandyZm02OXUxdXV5ZTJ1OHoxdWVtb2cwN2JjanVsa3VsamZ0MnRuZyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/YBa9a3HhN4kb3XG6sC/giphy.gif",
+    "https://media.giphy.com/media/3oriO0OEd9QIDdllqo/giphy.gif"
+];
+
+const finalBear = "https://media.giphy.com/media/MDJ9IbxxvDUQM/giphy.gif";
+
+let noCount = 0;
+let yesScale = 1;
+let noScale = 1;
+let noShift = 0;
+
+const yesBtn = document.getElementById("yesBtn");
+const noBtn = document.getElementById("noBtn");
+const bear = document.getElementById("bear");
+const question = document.getElementById("question");
+
+noBtn.addEventListener("click", () => {
+
+    // Change bear
+    bear.src = bearGifs[noCount % bearGifs.length];
+    noCount++;
+
+    // YES grows
+    yesScale += 0.25;
+    yesBtn.style.transform = `scale(${yesScale})`;
+
+    // NO shrinks
+    noScale -= 0.1;
+    if (noScale > 0.25) {
+        noBtn.style.transform = `scale(${noScale})`;
+        noBtn.style.opacity = 1;
+    }
+
+    // NO moves right slightly (avoids overlap)
+    noShift += 15;
+    noBtn.style.transform += ` translateX(${noShift}px)`;
+
+    // Full takeover trigger
+    if (yesScale > 4) {
+
+        question.style.display = "none";
+        bear.style.display = "none";
+        noBtn.style.display = "none";
+
+        yesBtn.style.position = "fixed";
+        yesBtn.style.top = "0";
+        yesBtn.style.left = "0";
+        yesBtn.style.width = "100vw";
+        yesBtn.style.height = "100vh";
+        yesBtn.style.borderRadius = "0";
+        yesBtn.style.fontSize = "60px";
+        yesBtn.style.transform = "scale(1)";
+    }
+});
+
+// CONFETTI + Final Screen
+yesBtn.addEventListener("click", () => {
+
+    // Immediately switch to final screen
+    document.body.innerHTML = `
+        <div style="
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+            justify-content:center;
+            height:100vh;
+            background: radial-gradient(circle at center, #ff2d75, #090a0f);
+        ">
+            <img src="${finalBear}" style="width:260px;">
+            <h1 style="color:white;font-size:42px;">Knew you’d say yes ❤️</h1>
+        </div>
+    `;
+
+    // Wait 50ms so DOM updates
+    setTimeout(() => {
+
+        const duration = 2000;
+        const end = Date.now() + duration;
+
+        (function frame() {
+            confetti({
+                particleCount: 6,
+                angle: 60,
+                spread: 55,
+                origin: { x: 0 }
+            });
+
+            confetti({
+                particleCount: 6,
+                angle: 120,
+                spread: 55,
+                origin: { x: 1 }
+            });
+
+            if (Date.now() < end) {
+                requestAnimationFrame(frame);
+            }
+        })();
+
+    }, 50);
+
+});
+
+</script>
+
+</body>
+</html>
